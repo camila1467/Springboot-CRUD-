@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import br.com.springboot.curso_jdev_treinamento.model.Usuario;
 import br.com.springboot.curso_jdev_treinamento.repository.UsuarioRepository;
 
@@ -28,14 +29,11 @@ import br.com.springboot.curso_jdev_treinamento.repository.UsuarioRepository;
 @RestController
 public class GreetingsController {
 
+
 	@Autowired /* IC/CD ou CDI - Injeção de dependencia */
 	private UsuarioRepository usuarioRepository;
 	
-	/**
-	 *
-	 * @param name the name to greet
-	 * @return greeting text
-	 */
+	
 	@RequestMapping(value = "/mostrarnome/{name}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
 	public String greetingText(@PathVariable String name) {
@@ -44,15 +42,18 @@ public class GreetingsController {
 
 	@RequestMapping(value = "/olamundo/{nome}", method = RequestMethod.GET)
 	@ResponseStatus(HttpStatus.OK)
-	public String retornaOlaMundo(@PathVariable String nome, int idade) {
+	public String retornaOlaMundo(@PathVariable String nome) {
 
 		Usuario usuario = new Usuario();
 		usuario.setNome(nome);
-      usuario.setIdade(idade);
+
 		usuarioRepository.save(usuario);/* grava no banco de dados */
 
-		return "Ola mundo " + nome +idade;
+		return "Ola mundo " + nome ;
 	}
+	
+
+	
 
 	@GetMapping(value = "listatodos") /* Nosso primeiro método de API */
 	@ResponseBody /* Retorna os dados par ao corpo da resposta */
@@ -63,15 +64,55 @@ public class GreetingsController {
 		return new ResponseEntity<List<Usuario>>(usuarios, HttpStatus.OK);/* Retorna a lista em JSON */
 
 	}
+	@PostMapping(value = "salvar") /* mapeia a url */
+	@ResponseBody /* Descricao da resposta */
+	public ResponseEntity<Usuario> salvar(@RequestBody Usuario usuario) { /* Recebe os dados para salvar */
+
+		Usuario user = usuarioRepository.save(usuario);
+
+		return new ResponseEntity<Usuario>(user, HttpStatus.CREATED);
+
+	}
+	
+
+
+
+	@DeleteMapping(value = "deletar") /* mapeia a url */
+	@ResponseBody /* Descricao da resposta */
+	public ResponseEntity<String> deletar(@RequestParam Long iduser) { /* Recebe os dados para deletar */
+
+		 usuarioRepository.deleteById(iduser);;
+
+		return new ResponseEntity<String>("usuario deletado com sucesso", HttpStatus.OK);
+
+	}
+	@GetMapping(value = "buscarUserporId") /* mapeia a url */
+	@ResponseBody /* Descricao da resposta */
+	public ResponseEntity<Usuario> buscarUserporId(@RequestParam(name="iduser") Long iduser) { /* Recebe os dados para cpnsultar */
+
+		Usuario	usuario= usuarioRepository.findById(iduser).get();//busca por id
+
+		return new ResponseEntity<Usuario>(usuario, HttpStatus.OK);
+
+	}
+	@PutMapping(value = "atualizar") /* mapeia a url */
+	@ResponseBody /* Descricao da resposta */
+	public ResponseEntity<Usuario> atualizar(@RequestBody Usuario usuario) { /* Recebe os dados para salvar */
+
+		Usuario user = usuarioRepository.saveAndFlush(usuario);
+
+		return new ResponseEntity<Usuario>(user, HttpStatus.CREATED);
+
+	}
+	
+	
+	
 
 	
 	
-	
-	
 
 	
-	
-	
+}
 		
 
-}
+
